@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.2">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.2" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="什么是发布/订阅模式？一张图来解释:   发布者发布一项内容给控制中心  控制中心将内容发送给对应的订阅者   当我们需要在完全没有联系的组件之间通信，经常会用到，下面开始code。">
+<meta name="keywords" content="eventBus 发布&#x2F;订阅模式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="自己实现一个eventBus">
+<meta property="og:url" content="https://wang-hang.github.io/2018/09/06/eventBus/index.html">
+<meta property="og:site_name" content="Mr.w">
+<meta property="og:description" content="什么是发布/订阅模式？一张图来解释:   发布者发布一项内容给控制中心  控制中心将内容发送给对应的订阅者   当我们需要在完全没有联系的组件之间通信，经常会用到，下面开始code。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://wang-hang.github.io/images/eventBus/eventbus.png">
+<meta property="og:image" content="https://wang-hang.github.io/images/eventBus/eventBus_1.gif">
+<meta property="og:image" content="https://wang-hang.github.io/images/eventBus/eventBus_2.gif">
+<meta property="og:image" content="https://wang-hang.github.io/images/eventBus/eventBus_3.gif">
+<meta property="og:image" content="https://wang-hang.github.io/images/eventBus/eventBus_4.gif">
+<meta property="og:updated_time" content="2019-06-10T09:14:03.908Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="自己实现一个eventBus">
+<meta name="twitter:description" content="什么是发布/订阅模式？一张图来解释:   发布者发布一项内容给控制中心  控制中心将内容发送给对应的订阅者   当我们需要在完全没有联系的组件之间通信，经常会用到，下面开始code。">
+<meta name="twitter:image" content="https://wang-hang.github.io/images/eventBus/eventbus.png">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://wang-hang.github.io/2018/09/06/eventBus/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>自己实现一个eventBus | Mr.w</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Mr.w</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">wanghang</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://wang-hang.github.io/2018/09/06/eventBus/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="wh">
+      <meta itemprop="description" content="越努力，越幸运">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mr.w">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">自己实现一个eventBus
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-09-06 17:29:18" itemprop="dateCreated datePublished" datetime="2018-09-06T17:29:18+08:00">2018-09-06</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-10 17:14:03" itemprop="dateModified" datetime="2019-06-10T17:14:03+08:00">2019-06-10</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/JavaScript/" itemprop="url" rel="index"><span itemprop="name">JavaScript</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/09/06/eventBus/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/09/06/eventBus/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+            <span id="/2018/09/06/eventBus/" class="leancloud_visitors" data-flag-title="自己实现一个eventBus">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读次数：</span>
+              
+                <span class="leancloud-visitors-count"></span>
+            </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="什么是发布-订阅模式？"><a href="#什么是发布-订阅模式？" class="headerlink" title="什么是发布/订阅模式？"></a>什么是发布/订阅模式？</h1><p>一张图来解释:<br><img src="/images/eventBus/eventbus.png" alt>  </p>
+<p>发布者发布一项内容给控制中心  控制中心将内容发送给对应的订阅者  </p>
+<p>当我们需要在完全没有联系的组件之间通信，经常会用到，下面开始code。<br><a id="more"></a></p>
+<h1 id="开始code一个最简单的"><a href="#开始code一个最简单的" class="headerlink" title="开始code一个最简单的"></a>开始code一个最简单的</h1><p>首先我们先创建一个类 EventBus<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">class EventBus &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>类创建好了  我们需要思考一下我们这个类需要哪些方法和属性。<br>首先我们肯定需要一个发布方法 一个订阅方法。其次我们还需要一个存储中心来存储事件以及对应的订阅函数，下面使我们目前想到的方法和属性。</p>
+<ol>
+<li>发布方法 fire</li>
+<li>订阅方法 on</li>
+<li>存储中心 events</li>
+</ol>
+<p>ok 我们的eventBus类现在长成了这样<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">class EventBus &#123;</span><br><span class="line">  constructor() &#123;</span><br><span class="line">    this.events = &#123;&#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  on = (eventName, callback) =&gt; &#123;</span><br><span class="line">    this.events[eventName] = callback; // 以事件名为key 订阅函数为value存储在events里</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  fire = (eventName) =&gt; &#123;</span><br><span class="line">    this.events[eventName]() // 调用事件对应的订阅函数</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>现在完成了一个最简单的eventBus,  我们来测试一下 看看效果<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">const eventBust = new EventBus()</span><br><span class="line">eventBus.on(&apos;greet&apos;); // 订阅事件 greet</span><br><span class="line"></span><br><span class="line">setTimeout(() =&gt; &#123;</span><br><span class="line">  eventBus.fire(&apos;greet&apos;) // 3s 后触发 greet 事件</span><br><span class="line">&#125;, 3000);</span><br></pre></td></tr></table></figure></p>
+<p><img src="/images/eventBus/eventBus_1.gif" alt></p>
+<h1 id="给事件的订阅函数传递参数"><a href="#给事件的订阅函数传递参数" class="headerlink" title="给事件的订阅函数传递参数"></a>给事件的订阅函数传递参数</h1><p>ok 这个简单的eventBus可以正常运行了，下面我们要是想在触发事件的同时传一些参数进去呢？<br>我们将fire改造一下就可以啦 用上扩展运算法 ‘…’ 想传几个参数就传几个参数。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">fire(eventName, ...arg) &#123;</span><br><span class="line">    this.events[eventName].call(this, ...arg) // 使用... 扩展运算符将所有参数传入订阅函数</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></p>
+<p>测试一下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">const eventBus = new EventBus()</span><br><span class="line"></span><br><span class="line">eventBus.on(&apos;greet&apos;, (name1, name2) =&gt; &#123;</span><br><span class="line">  console.log(`hello $&#123;name1&#125; and $&#123;name2&#125; ！`);</span><br><span class="line">&#125;); // 订阅事件 greet</span><br><span class="line"></span><br><span class="line">setTimeout(() =&gt; &#123;</span><br><span class="line">  eventBus.fire(&apos;greet&apos;, &apos;小明&apos;, &apos;小红&apos;) // 3s 后触发 greet 事件 并传入两个参数</span><br><span class="line">&#125;, 3000);</span><br></pre></td></tr></table></figure></p>
+<p><img src="/images/eventBus/eventBus_2.gif" alt></p>
+<h1 id="取消事件的所有订阅程序"><a href="#取消事件的所有订阅程序" class="headerlink" title="取消事件的所有订阅程序"></a>取消事件的所有订阅程序</h1><p>如果我们想要取消对某个事件的订阅呢？<br>回顾一下 我们现在的eventBus具有的方法和属性，同时添加一个取消的方法。这是现在eventBus的样子</p>
+<ol>
+<li>发布方法 fire</li>
+<li>订阅方法 on</li>
+<li>存储中心 events</li>
+<li>取消订阅某一事件的所有方法 offAll</li>
+</ol>
+<p>改造一下fire并添加一个offAll方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">fire(eventName, ...arg) &#123;</span><br><span class="line">    if(typeof this.events[eventName] === &apos;function&apos;) &#123;</span><br><span class="line">      this.events[eventName].call(this, ...arg);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">offAll(eventName) &#123;</span><br><span class="line">    Reflect.deleteProperty(this.events, eventName); // 删除对某一事件的订阅</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></p>
+<p>测试一下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">const eventBus = new EventBus()</span><br><span class="line">eventBus.on(&apos;greet&apos;, (name1, name2) =&gt; &#123;</span><br><span class="line">  console.log(`hello $&#123;name1&#125; and $&#123;name2&#125; ！`);</span><br><span class="line">&#125;); // 订阅事件 greet</span><br><span class="line"></span><br><span class="line">eventBus.offAll(&apos;greet&apos;); // 取消订阅</span><br><span class="line"></span><br><span class="line">setTimeout(() =&gt; &#123;</span><br><span class="line">  eventBus.fire(&apos;greet&apos;, &apos;小明&apos;, &apos;小红&apos;) // 3s 后触发 greet 事件</span><br><span class="line">  console.log(&apos;若上面没有log出内容 说明取消订阅成功&apos;);</span><br><span class="line">&#125;, 3000);</span><br></pre></td></tr></table></figure></p>
+<p><img src="/images/eventBus/eventBus_3.gif" alt></p>
+<h1 id="取消事件特定的订阅程序"><a href="#取消事件特定的订阅程序" class="headerlink" title="取消事件特定的订阅程序"></a>取消事件特定的订阅程序</h1><p>上面的offAll 是取消了对某一事件订阅所有订阅函数 加入我们只想取消某一个订阅程序呢？<br>加一个off方法， 同事改造一下on和fire方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">on(eventName, callback) &#123;</span><br><span class="line">    // 可能同一个事件注册了不同的订阅函数</span><br><span class="line">    if(this.events[eventName]) &#123; </span><br><span class="line">      this.events[eventName].push(callback);</span><br><span class="line">    &#125;else &#123;</span><br><span class="line">      this.events[eventName] = [callback];</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">fire(eventName, ...arg) &#123;</span><br><span class="line">  if(Reflect.has(this.events, eventName)) &#123;</span><br><span class="line">    this.events[eventName].forEach(fn =&gt; &#123;</span><br><span class="line">      fn.call(this, ...arg);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">off(eventName, fnName) &#123; // 根据订阅程序的函数名称移除</span><br><span class="line">  const fns = this.events[eventName];</span><br><span class="line">  const targetIndex = fns.findIndex(fn =&gt; (fn.name === fnName));</span><br><span class="line">  fns.splice(targetIndex, 1); // 删除指定订阅函数</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>测试一下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">const eventBus = new EventBus()</span><br><span class="line">const fn1 = () =&gt; &#123;</span><br><span class="line">  console.log(&apos;hello fn1 !!&apos;);</span><br><span class="line">&#125;</span><br><span class="line">const fn2 = () =&gt; &#123;</span><br><span class="line">  console.log(&apos;hello fn2 !!&apos;);</span><br><span class="line">&#125;</span><br><span class="line">eventBus.on(&apos;greet&apos;,fn1); // 订阅事件 greet</span><br><span class="line">eventBus.on(&apos;greet&apos;,fn2); // 订阅事件 greet</span><br><span class="line">eventBus.off(&apos;greet&apos;, &apos;fn1&apos;); // 取消对greet事件的订阅函数 fn1</span><br><span class="line">setTimeout(() =&gt; &#123;</span><br><span class="line">  eventBus.fire(&apos;greet&apos;) // 3s 后触发 greet 事件</span><br><span class="line">&#125;, 3000);</span><br></pre></td></tr></table></figure></p>
+<p><img src="/images/eventBus/eventBus_4.gif" alt>  </p>
+<p>从上图可看到  只执行了fn2 没有执行fn1  说明取消订阅fn1的函数 成功！</p>
+<h1 id="添加类型校验"><a href="#添加类型校验" class="headerlink" title="添加类型校验"></a>添加类型校验</h1><p>这个eventBus基本完成了我们还要在优化一下 添加一些类型校验，使代码更加健壮<br>最终完成的代码如下  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * events: &#123;&#125;</span><br><span class="line"> * events.key @type string   事件名称</span><br><span class="line"> * events.value @type array  事件注册时的回调函数组成的数组</span><br><span class="line"> */</span><br><span class="line"></span><br><span class="line">class EventBus &#123;</span><br><span class="line">  constructor() &#123;</span><br><span class="line">    this.events = &#123;&#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  /**</span><br><span class="line">   * 注册对事件的订阅</span><br><span class="line">   * @param &#123;*&#125; eventName 事件名称</span><br><span class="line">   * @param &#123;*&#125; callback 订阅程序</span><br><span class="line">   * @memberof EventBus</span><br><span class="line">   */</span><br><span class="line">  on(eventName, callback) &#123;</span><br><span class="line">    if(typeof eventName !== &apos;string&apos;) &#123;  </span><br><span class="line">      throw new Error(&apos;eventName expected string&apos;);</span><br><span class="line">    &#125;</span><br><span class="line">    if(typeof callback !==&apos;function&apos;) &#123;</span><br><span class="line">      throw new Error(&apos;callback expected function&apos;);</span><br><span class="line">    &#125;</span><br><span class="line">    // 可能同一个事件注册了不同的回调函数</span><br><span class="line">    if(this.events[eventName]) &#123; </span><br><span class="line">      this.events[eventName].push(callback);</span><br><span class="line">    &#125;else &#123;</span><br><span class="line">      this.events[eventName] = [callback]; //  此事件还未注册回调</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  /**</span><br><span class="line">   *触发事件</span><br><span class="line">   *</span><br><span class="line">   * @param &#123;*&#125; eventName 事件名称</span><br><span class="line">   * @param &#123;*&#125; arg 传给订阅程序的参数</span><br><span class="line">   * @memberof EventBus</span><br><span class="line">   */</span><br><span class="line">  fire(eventName, ...arg) &#123;</span><br><span class="line">    if(typeof eventName !== &apos;string&apos;) &#123;  </span><br><span class="line">      throw new Error(&apos;eventName expected string&apos;);</span><br><span class="line">    &#125;</span><br><span class="line">    if(Reflect.has(this.events, eventName)) &#123;</span><br><span class="line">      this.events[eventName].forEach(fn =&gt; &#123;</span><br><span class="line">        fn.call(this, ...arg);</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  /**</span><br><span class="line">   * 取消订阅指定函数的事件</span><br><span class="line">   *</span><br><span class="line">   * @param &#123;*&#125; eventName 事件名称</span><br><span class="line">   * @param &#123;*&#125; fnName 订阅程序的名称</span><br><span class="line">   * @memberof EventBus</span><br><span class="line">   */</span><br><span class="line">  off(eventName, fnName) &#123;</span><br><span class="line">    const fns = this.events[eventName];</span><br><span class="line">    const targetIndex = fns.findIndex(fn =&gt; (fn.name === fnName));</span><br><span class="line">    fns.splice(targetIndex, 1); // 删除指定回调</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  /**</span><br><span class="line">   *取消所有指定事件的订阅</span><br><span class="line">   *</span><br><span class="line">   * @param &#123;*&#125; eventName 事件名称</span><br><span class="line">   * @memberof EventBus</span><br><span class="line">   */</span><br><span class="line">  offAll(eventName) &#123;</span><br><span class="line">    Reflect.deleteProperty(this.events, eventName)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/eventBus-发布-订阅模式/" rel="tag"># eventBus 发布/订阅模式</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/09/06/react-router v4/" rel="next" title="React-Router v4.0 笔记">
+                <i class="fa fa-chevron-left"></i> React-Router v4.0 笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/09/06/FCC 算法题 Title Case a Sentence/" rel="prev" title="FCC 题目 Title Case a Sentence">
+                FCC 题目 Title Case a Sentence <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">wh</p>
+              <div class="site-description motion-element" itemprop="description">越努力，越幸运</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">12</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#什么是发布-订阅模式？"><span class="nav-number">1.</span> <span class="nav-text">什么是发布/订阅模式？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#开始code一个最简单的"><span class="nav-number">2.</span> <span class="nav-text">开始code一个最简单的</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#给事件的订阅函数传递参数"><span class="nav-number">3.</span> <span class="nav-text">给事件的订阅函数传递参数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#取消事件的所有订阅程序"><span class="nav-number">4.</span> <span class="nav-text">取消事件的所有订阅程序</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#取消事件特定的订阅程序"><span class="nav-number">5.</span> <span class="nav-text">取消事件特定的订阅程序</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#添加类型校验"><span class="nav-number">6.</span> <span class="nav-text">添加类型校验</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wh</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.1.2</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.2"></script>
+
+  <script src="/js/motion.js?v=7.1.2"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.2"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.2"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.2"></script>
+<script src="/js/post-details.js?v=7.1.2"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.2"></script>
+
+
+  
+
+  
+
+  
+
+  
+  
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://wanghang.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://wang-hang.github.io/2018/09/06/eventBus/";
+    this.page.identifier = "2018/09/06/eventBus/";
+    this.page.title = '自己实现一个eventBus';
+    };
+  function loadComments() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://wanghang.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', '' + +new Date());
+    (d.head || d.body).appendChild(s);
+  }
+  
+    window.addEventListener('load', loadComments, false);
+  
+</script>
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+  
+  
+  <script>
+    
+    function addCount(Counter) {
+      var $visitors = $('.leancloud_visitors');
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+
+      Counter('get', '/classes/Counter', { where: JSON.stringify({ url }) })
+        .done(function({ results }) {
+          if (results.length > 0) {
+            var counter = results[0];
+            
+            Counter('put', '/classes/Counter/' + counter.objectId, JSON.stringify({ time: { '__op': 'Increment', 'amount': 1 } }))
+            
+              .done(function() {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.time + 1);
+              })
+            
+              .fail(function ({ responseJSON }) {
+                console.log('Failed to save Visitor num, with error message: ' + responseJSON.error);
+              })
+          } else {
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text('Counter not initialized! More info at console err msg.');
+              console.error('ATTENTION! LeanCloud counter has security bug, see how to solve it here: https://github.com/theme-next/hexo-leancloud-counter-security. \n However, you can still use LeanCloud without security, by setting `security` option to `false`.');
+            
+          }
+        })
+        .fail(function ({ responseJSON }) {
+          console.log('LeanCloud Counter Error: ' + responseJSON.code + ' ' + responseJSON.error);
+        });
+    }
+    
+
+    $(function() {
+      $.get('https://app-router.leancloud.cn/2/route?appId=' + 'YDLi0ipkLyUH7WWoIWni9m5q-gzGzoHsz')
+        .done(function({ api_server }) {
+          var Counter = function(method, url, data) {
+            return $.ajax({
+              method: method,
+              url: 'https://' + api_server + '/1.1' + url,
+              headers: {
+                'X-LC-Id': 'YDLi0ipkLyUH7WWoIWni9m5q-gzGzoHsz',
+                'X-LC-Key': 'kghL1tbFSIG7QNhCqKagggCh',
+                'Content-Type': 'application/json',
+              },
+              data: data
+            });
+          };
+          
+            addCount(Counter);
+          
+        });
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

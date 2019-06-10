@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.2">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.2" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="最近一直再用脚手架搭建开发环境，突然发现自己过度依赖脚手架，这可不是好现象。于是便有了自己搞一套webpack-react-ts开发环境的想法。     下面就开始动手吧。">
+<meta name="keywords" content="webpack,typescript,react">
+<meta property="og:type" content="article">
+<meta property="og:title" content="webpack-react-ts 搭建开发环境（一）">
+<meta property="og:url" content="https://wang-hang.github.io/2018/09/04/webpack-react-ts/index.html">
+<meta property="og:site_name" content="Mr.w">
+<meta property="og:description" content="最近一直再用脚手架搭建开发环境，突然发现自己过度依赖脚手架，这可不是好现象。于是便有了自己搞一套webpack-react-ts开发环境的想法。     下面就开始动手吧。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://wang-hang.github.io/images/webpack.svg">
+<meta property="og:updated_time" content="2019-06-10T09:14:03.908Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="webpack-react-ts 搭建开发环境（一）">
+<meta name="twitter:description" content="最近一直再用脚手架搭建开发环境，突然发现自己过度依赖脚手架，这可不是好现象。于是便有了自己搞一套webpack-react-ts开发环境的想法。     下面就开始动手吧。">
+<meta name="twitter:image" content="https://wang-hang.github.io/images/webpack.svg">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://wang-hang.github.io/2018/09/04/webpack-react-ts/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>webpack-react-ts 搭建开发环境（一） | Mr.w</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Mr.w</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">wanghang</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://wang-hang.github.io/2018/09/04/webpack-react-ts/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="wh">
+      <meta itemprop="description" content="越努力，越幸运">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mr.w">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">webpack-react-ts 搭建开发环境（一）
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-09-04 15:00:00" itemprop="dateCreated datePublished" datetime="2018-09-04T15:00:00+08:00">2018-09-04</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-10 17:14:03" itemprop="dateModified" datetime="2019-06-10T17:14:03+08:00">2019-06-10</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Webpack/" itemprop="url" rel="index"><span itemprop="name">Webpack</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/09/04/webpack-react-ts/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/09/04/webpack-react-ts/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+            <span id="/2018/09/04/webpack-react-ts/" class="leancloud_visitors" data-flag-title="webpack-react-ts 搭建开发环境（一）">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读次数：</span>
+              
+                <span class="leancloud-visitors-count"></span>
+            </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="/images/webpack.svg" width="300px" height="300px" class="image-main"><br>最近一直再用脚手架搭建开发环境，突然发现自己过度依赖脚手架，这可不是好现象。于是便有了自己搞一套webpack-react-ts开发环境的想法。    </p>
+<p>下面就开始动手吧。<br><a id="more"></a></p>
+<h1 id="Step1-创建项目目录及初始化"><a href="#Step1-创建项目目录及初始化" class="headerlink" title="Step1: 创建项目目录及初始化"></a>Step1: 创建项目目录及初始化</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir webpack-react-typescript</span><br><span class="line">$ npm init // 填写项目信息 身为懒人的我自然是一路回车</span><br></pre></td></tr></table></figure>
+<p>创建代码目录以及webapck配置文件，下面是我目前创建好的目录结构</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">├── index.html</span><br><span class="line">├── package.json</span><br><span class="line">├── src</span><br><span class="line">│   ├── App.tsx</span><br><span class="line">│   └── index.ts</span><br><span class="line">└── webpack.config.js</span><br></pre></td></tr></table></figure>
+<p>然后安装依赖， webpack用来打包，devServer 是一个简单的本地服务器 webpack-html-plugin用于生成html<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm i webpack webpack-dev-server html-webpack-plugin webpack-cli --save-dev</span><br></pre></td></tr></table></figure></p>
+<h1 id="Step2-配置webpack"><a href="#Step2-配置webpack" class="headerlink" title="Step2: 配置webpack"></a>Step2: 配置webpack</h1><p>下面开始配置webpack ,  </p>
+<p>最基本的配置 入口文件以及出口文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">const path = require(&apos;path&apos;); // 引入path工具</span><br><span class="line"></span><br><span class="line">module.exports = &#123;</span><br><span class="line">  mode:&apos;development&apos;, //webpack4开始 需要指定mode属性</span><br><span class="line">  entry: path.resolve(__dirname, &apos;index.ts&apos;),</span><br><span class="line">  output: &#123;</span><br><span class="line">    filename: &apos;[name][hash:6].js&apos;, // hash：后面的数字指定hash值位数</span><br><span class="line">    path: path.resolve(__dirname, &apos;dist&apos;), // 指定输出目录</span><br><span class="line">  &#125;,</span><br><span class="line">  resolve:&#123;</span><br><span class="line">    extensions: [&apos;.ts&apos;,&apos;.tsx&apos;,&apos;.js&apos;] // 此选项可在import模块时省略扩展名</span><br><span class="line">  &#125;,</span><br><span class="line"></span><br><span class="line">  plugins:[</span><br><span class="line">    new webpackHtmlPlugin(&#123;</span><br><span class="line">      template: path.resolve(__dirname, &apos;index/html&apos;) // 指定模板html文件</span><br><span class="line">    &#125;),</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>如果我们用的是JS 的话按照目前的配置应该已经可以开始跑起来了 但是我们可是严肃的TS！！</p>
+<p>所以我们还需要配置TS必不可少的三样东西 tsconfig.json tslint.json ts-loader  </p>
+<p>下面我们首先安装依赖  （tslint 选装，但强烈推荐）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install --save-dev typescript awesome-typescript-loader tslint</span><br></pre></td></tr></table></figure></p>
+<p>然后创建配置文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ touch tsconfig.json tslint.json // touch是shell命令，不熟悉可以手动创建两个文件</span><br></pre></td></tr></table></figure></p>
+<p><strong><em> tsconfig.json  配置：</em></strong></p>
+<p>下面是一些基本的配置<br>noImplicitAny选项 建议打开 作用是在ts文件中不能有隐式any类型，其他配置项见 <a href="https://www.tslang.cn/docs/handbook/compiler-options.html" target="_blank" rel="noopener">TypeScript官网</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;compilerOptions&quot;: &#123;</span><br><span class="line">    &quot;outDir&quot;: &quot;./dist/&quot;,</span><br><span class="line">    &quot;noImplicitAny&quot;: true,</span><br><span class="line">    &quot;sourceMap&quot;: true,</span><br><span class="line">    &quot;module&quot;: &quot;esnext&quot;,</span><br><span class="line">    &quot;target&quot;: &quot;es5&quot;,</span><br><span class="line">    &quot;jsx&quot;: &quot;react&quot;,</span><br><span class="line">    &quot;moduleResolution&quot;: &quot;node&quot;</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;include&quot;: [</span><br><span class="line">    &quot;src/**/*&quot;</span><br><span class="line">  ],</span><br><span class="line">  &quot;exclude&quot;: [</span><br><span class="line">    &quot;node_modules&quot;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong><em> tslint.json 配置：</em></strong> </p>
+<p>rules 是 规则配置 这些是我惯用的一些配置 其他配置可移步 <a href="https://palantir.github.io/tslint/" target="_blank" rel="noopener">TSLint官网</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;extends&quot;: &quot;tslint:recommended&quot;,</span><br><span class="line">  &quot;linterOptions&quot;:&#123;</span><br><span class="line">    &quot;exclude&quot;:[</span><br><span class="line">      &quot;dist/*&quot;</span><br><span class="line">    ]</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;rules&quot;:&#123;</span><br><span class="line">      &quot;quotemark&quot;: &#123;</span><br><span class="line">        &quot;options&quot;: [&quot;single&quot;,&quot;jsx-single&quot;],</span><br><span class="line">        &quot;severity&quot;: &quot;error&quot;</span><br><span class="line">      &#125;,</span><br><span class="line">      &quot;space-before-function-paren&quot;: true,</span><br><span class="line">      &quot;no-magic-numbers&quot;:true,</span><br><span class="line">      &quot;no-empty&quot;:true,</span><br><span class="line">      &quot;no-unused-expression&quot;: true,</span><br><span class="line">      &quot;import-spacing&quot;: true,</span><br><span class="line">      &quot;ordered-imports&quot;:false,</span><br><span class="line">      &quot;semicolon&quot;:true,</span><br><span class="line">      &quot;object-literal-sort-keys&quot;:false,</span><br><span class="line">      &quot;no-console&quot;:false,</span><br><span class="line">      &quot;member-ordering&quot;:false,</span><br><span class="line">      &quot;forin&quot;:false,</span><br><span class="line">      &quot;no-unused-variable&quot;:true</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong><em> tips: 注意json文件的格式一定要对 不然无法生效 比如对象与数组的最后一项后不能有逗号（可把我坑苦了） </em></strong></p>
+<p>配置ts-loader 或 awesome-typescript-loader 二者选其一即可。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">module: &#123;</span><br><span class="line">    rules: [</span><br><span class="line">      &#123;</span><br><span class="line">        test: /\.tsx?$/,</span><br><span class="line">        loader: &apos;awesome-typescript-loader&apos;</span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></p>
+<p>现在基本的配置都齐全了，若全局安装过webpack-dev-server 和 webpack的话可直接在shell中输入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ webpack-dev-server  // 启动静态服务器</span><br><span class="line">$ webpack  // 打包</span><br></pre></td></tr></table></figure>
+<p>这可不够优雅！所以我们在package.json中添加script字段</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&quot;scripts&quot;: &#123;</span><br><span class="line">    &quot;start&quot;: &quot;webpack-dev-server&quot;,</span><br><span class="line">    &quot;build&quot;: &quot;webpack&quot;,</span><br><span class="line">    &quot;tslint&quot;: &quot;tslint --fix -p ./&quot;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>tslint 可配合VScode的tslint插件 在写代码的过程中即可检查lint错误非常好用，极力推荐，项目中的tslint.json 文件会覆盖vscode插件的配置<br>下面就是见证奇迹的时刻， 在shell中输入命令 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm run start</span><br></pre></td></tr></table></figure>
+<p>我们的服务器就起来了。打开浏览器输入 webpack-dev-server提示的地址即可看到我们的程序已经可以跑起来了。<br>下面是截止到目前的目录结构</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">├── index.html</span><br><span class="line">├── package.json</span><br><span class="line">├── src</span><br><span class="line">│   ├── App.tsx</span><br><span class="line">│   └── index.tsx</span><br><span class="line">├── tsconfig.json</span><br><span class="line">├── tslint.json</span><br><span class="line">└── webpack.config.js</span><br></pre></td></tr></table></figure>
+<p>但是还缺点啥？</p>
+<p>缺CSS啊！没有CSS叫什么前端！！这就加上！</p>
+<p>我们在App.tsx中引入CSS文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">import &apos;./app.css&apos;;</span><br></pre></td></tr></table></figure>
+<p>这就够了吗？  当然不够 webpack还不认是你的css文件呢 我们得加上css-loader</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install --save-dev style-loader css-loader</span><br></pre></td></tr></table></figure>
+<p>然后修改我们的webpack配置文件的rule规则,test匹配CSS文件 use选择使用对应的loader取处理对应的文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  test: /\.css$/,</span><br><span class="line">  use:[&apos;style-loader&apos;,&apos;css-loader&apos;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>现在我们的项目已经基本上有的功能都有了 接下来就是优化了。</p>
+<p>具体看我下一篇博客(暂未更新)</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/webpack/" rel="tag"># webpack</a>
+          
+            <a href="/tags/typescript/" rel="tag"># typescript</a>
+          
+            <a href="/tags/react/" rel="tag"># react</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/09/06/react-router v4/" rel="prev" title="React-Router v4.0 笔记">
+                React-Router v4.0 笔记 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">wh</p>
+              <div class="site-description motion-element" itemprop="description">越努力，越幸运</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">12</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Step1-创建项目目录及初始化"><span class="nav-number">1.</span> <span class="nav-text">Step1: 创建项目目录及初始化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Step2-配置webpack"><span class="nav-number">2.</span> <span class="nav-text">Step2: 配置webpack</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wh</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.1.2</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.2"></script>
+
+  <script src="/js/motion.js?v=7.1.2"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.2"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.2"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.2"></script>
+<script src="/js/post-details.js?v=7.1.2"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.2"></script>
+
+
+  
+
+  
+
+  
+
+  
+  
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://wanghang.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://wang-hang.github.io/2018/09/04/webpack-react-ts/";
+    this.page.identifier = "2018/09/04/webpack-react-ts/";
+    this.page.title = 'webpack-react-ts 搭建开发环境（一）';
+    };
+  function loadComments() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://wanghang.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', '' + +new Date());
+    (d.head || d.body).appendChild(s);
+  }
+  
+    window.addEventListener('load', loadComments, false);
+  
+</script>
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+  
+  
+  <script>
+    
+    function addCount(Counter) {
+      var $visitors = $('.leancloud_visitors');
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+
+      Counter('get', '/classes/Counter', { where: JSON.stringify({ url }) })
+        .done(function({ results }) {
+          if (results.length > 0) {
+            var counter = results[0];
+            
+            Counter('put', '/classes/Counter/' + counter.objectId, JSON.stringify({ time: { '__op': 'Increment', 'amount': 1 } }))
+            
+              .done(function() {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.time + 1);
+              })
+            
+              .fail(function ({ responseJSON }) {
+                console.log('Failed to save Visitor num, with error message: ' + responseJSON.error);
+              })
+          } else {
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text('Counter not initialized! More info at console err msg.');
+              console.error('ATTENTION! LeanCloud counter has security bug, see how to solve it here: https://github.com/theme-next/hexo-leancloud-counter-security. \n However, you can still use LeanCloud without security, by setting `security` option to `false`.');
+            
+          }
+        })
+        .fail(function ({ responseJSON }) {
+          console.log('LeanCloud Counter Error: ' + responseJSON.code + ' ' + responseJSON.error);
+        });
+    }
+    
+
+    $(function() {
+      $.get('https://app-router.leancloud.cn/2/route?appId=' + 'YDLi0ipkLyUH7WWoIWni9m5q-gzGzoHsz')
+        .done(function({ api_server }) {
+          var Counter = function(method, url, data) {
+            return $.ajax({
+              method: method,
+              url: 'https://' + api_server + '/1.1' + url,
+              headers: {
+                'X-LC-Id': 'YDLi0ipkLyUH7WWoIWni9m5q-gzGzoHsz',
+                'X-LC-Key': 'kghL1tbFSIG7QNhCqKagggCh',
+                'Content-Type': 'application/json',
+              },
+              data: data
+            });
+          };
+          
+            addCount(Counter);
+          
+        });
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

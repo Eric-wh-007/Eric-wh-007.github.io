@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.2">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.2" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="最近用了几次react-router感觉对其使用还不够熟练，所以看着官方文档复习了一下，顺便做个笔记。">
+<meta name="keywords" content="react react-router">
+<meta property="og:type" content="article">
+<meta property="og:title" content="React-Router v4.0 笔记">
+<meta property="og:url" content="https://wang-hang.github.io/2018/09/06/react-router v4/index.html">
+<meta property="og:site_name" content="Mr.w">
+<meta property="og:description" content="最近用了几次react-router感觉对其使用还不够熟练，所以看着官方文档复习了一下，顺便做个笔记。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://wang-hang.github.io/images/react-router.png">
+<meta property="og:image" content="https://wang-hang.github.io/images/step1.gif">
+<meta property="og:image" content="https://wang-hang.github.io/images/step2.gif">
+<meta property="og:image" content="https://wang-hang.github.io/images/step3.gif">
+<meta property="og:image" content="https://wang-hang.github.io/images/step4.gif">
+<meta property="og:image" content="https://wang-hang.github.io/images/step5.gif">
+<meta property="og:image" content="https://wang-hang.github.io/images/step6.gif">
+<meta property="og:image" content="https://wang-hang.github.io/images/step7.gif">
+<meta property="og:image" content="https://wang-hang.github.io/images/step8.gif">
+<meta property="og:image" content="https://wang-hang.github.io/images/step9.gif">
+<meta property="og:updated_time" content="2019-06-10T09:14:03.908Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="React-Router v4.0 笔记">
+<meta name="twitter:description" content="最近用了几次react-router感觉对其使用还不够熟练，所以看着官方文档复习了一下，顺便做个笔记。">
+<meta name="twitter:image" content="https://wang-hang.github.io/images/react-router.png">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://wang-hang.github.io/2018/09/06/react-router v4/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>React-Router v4.0 笔记 | Mr.w</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Mr.w</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">wanghang</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://wang-hang.github.io/2018/09/06/react-router v4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="wh">
+      <meta itemprop="description" content="越努力，越幸运">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mr.w">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">React-Router v4.0 笔记
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-09-06 17:29:18" itemprop="dateCreated datePublished" datetime="2018-09-06T17:29:18+08:00">2018-09-06</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-10 17:14:03" itemprop="dateModified" datetime="2019-06-10T17:14:03+08:00">2019-06-10</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/react/" itemprop="url" rel="index"><span itemprop="name">react</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/09/06/react-router v4/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/09/06/react-router v4/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+            <span id="/2018/09/06/react-router v4/" class="leancloud_visitors" data-flag-title="React-Router v4.0 笔记">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读次数：</span>
+              
+                <span class="leancloud-visitors-count"></span>
+            </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="/images/react-router.png" class="image-main"></p>
+<p>最近用了几次react-router感觉对其使用还不够熟练，所以看着官方文档复习了一下，顺便做个笔记。<br><a id="more"></a><br>因为webpack懒得搭环境了 所以直接上parcel 0 配置 很好用 但是正式开发我还是喜欢webpack 因为足够灵活  </p>
+<p>先上demo的 <a href="https://github.com/Eric-wh-007/react-router-v4-demo" target="_blank" rel="noopener">github链接</a>  </p>
+<p>这是<a href="https://reacttraining.com/react-router/web/guides/philosophy" target="_blank" rel="noopener">官方文档链接</a></p>
+<h1 id="匹配原理"><a href="#匹配原理" class="headerlink" title="匹配原理"></a>匹配原理</h1><p>Route 组件匹配采用从上到下依次匹配，直到最后一个路由或者无可匹配的路由为止。若想只匹配一个路由，请使用Switch组件</p>
+<h1 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h1><h2 id="选择Router："><a href="#选择Router：" class="headerlink" title="选择Router："></a>选择Router：</h2><p>react-router 提供了五种router供选择，但前端常用到的就三种，具体区别 见文档， 这次选择 BrowserRouter<br><strong>Router</strong>  需要传递history<br><strong>BrowserRouter</strong>   <em>(官方推荐)</em> 使用时需要服务器配合配置，若使用webpack开发需打开historyApiFallback选项<br><strong>HashRouter</strong>   url中有一个#号  </p>
+<h2 id="开始配置"><a href="#开始配置" class="headerlink" title="开始配置"></a>开始配置</h2><h3 id="初始配置"><a href="#初始配置" class="headerlink" title="初始配置"></a>初始配置</h3><p>现在有三个页面 home , book 和 book的子页面kongfu，如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;li&gt;&lt;Link to=&apos;/&apos;&gt;home&lt;/Link&gt;&lt;/li&gt;</span><br><span class="line">&lt;li&gt;&lt;Link to=&apos;/movie&apos;&gt;movie&lt;/Link&gt;&lt;/li&gt;</span><br><span class="line">&lt;li&gt;&lt;Link to=&apos;/movie/kongfu&apos;&gt;kongfu&lt;/Link&gt;&lt;/li&gt;</span><br><span class="line">  </span><br><span class="line">&lt;Route  path=&apos;/&apos; component=&#123;Home&#125; /&gt;</span><br><span class="line">&lt;Route  path=&apos;/movie&apos; component=&#123;Movie&#125; /&gt;</span><br><span class="line">&lt;Route  path=&apos;/movie/kongfu&apos; component=&#123;KongFu&#125; /&gt;</span><br></pre></td></tr></table></figure></p>
+<p>每一个被匹配到的路由均渲染了对应的组件，效果图如下：<br><img src="/images/step1.gif" alt><br>若我们想只匹配一个组件怎么办？往下看。</p>
+<h3 id="使用Switch组件"><a href="#使用Switch组件" class="headerlink" title="使用Switch组件"></a>使用Switch组件</h3><p>修改上面的路由部分代码，添加Switch组件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;Switch&gt;</span><br><span class="line">  &lt;Route  path=&apos;/&apos; component=&#123;Home&#125; /&gt;</span><br><span class="line">  &lt;Route  path=&apos;/movie&apos; component=&#123;Movie&#125; /&gt;</span><br><span class="line">  &lt;Route  path=&apos;/movie/kongfu&apos; component=&#123;KongFu&#125; /&gt;</span><br><span class="line">&lt;/Switch&gt;</span><br></pre></td></tr></table></figure></p>
+<p>无论跳转到任何一个路由都只会匹配第一个路由home。效果图如下：<br><img src="/images/step2.gif" alt></p>
+<p>但是我们并不想要这样的结果，有两个办法可以解决</p>
+<ol>
+<li>把最精确的路由放在最前面  </li>
+<li>Route组件添加exact属性  </li>
+</ol>
+<p>如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">// 第一种方法</span><br><span class="line">&lt;Switch&gt;</span><br><span class="line">  &lt;Route  path=&apos;/movie/kongfu&apos; component=&#123;KongFu&#125; /&gt;</span><br><span class="line">  &lt;Route  path=&apos;/movie&apos; component=&#123;Movie&#125; /&gt;</span><br><span class="line">  &lt;Route  path=&apos;/&apos; component=&#123;Home&#125; /&gt;</span><br><span class="line">&lt;/Switch&gt;</span><br><span class="line"></span><br><span class="line">// 第二种方法</span><br><span class="line">&lt;Switch&gt;</span><br><span class="line">  &lt;Route exact path=&apos;/&apos; component=&#123;Home&#125; /&gt;</span><br><span class="line">  &lt;Route exact  path=&apos;/movie&apos; component=&#123;Movie&#125; /&gt;</span><br><span class="line">  &lt;Route exact path=&apos;/movie/kongfu&apos; component=&#123;KongFu&#125; /&gt;</span><br><span class="line">&lt;/Switch&gt;</span><br></pre></td></tr></table></figure></p>
+<p>效果图如下：<br><img src="/images/step3.gif" alt>  </p>
+<h1 id="布局"><a href="#布局" class="headerlink" title="布局"></a>布局</h1><h2 id="单个布局"><a href="#单个布局" class="headerlink" title="单个布局"></a>单个布局</h2><p>我们日常使用过程中经常会有导航栏或者侧边栏的需求，如下。<br>header作为导航栏部分, main作为匹配路由的部分<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;header style=&#123;&#123;backgroundColor:&apos;#b8cca6&apos;&#125;&#125;&gt;</span><br><span class="line">  &lt;h1&gt;This is header&lt;/h1&gt;</span><br><span class="line">&lt;/header&gt;</span><br><span class="line"></span><br><span class="line">&lt;main style=&#123;&#123;backgroundColor:&apos;#26899e&apos;&#125;&#125;&gt;</span><br><span class="line">  &lt;Switch&gt;</span><br><span class="line">    &lt;Route exact path=&apos;/&apos; component=&#123;Home&#125; /&gt;</span><br><span class="line">    &lt;Route exact path=&apos;/movie&apos; component=&#123;Movie&#125; /&gt;</span><br><span class="line">    &lt;Route exact path=&apos;/book&apos; component=&#123;Book&#125; /&gt;</span><br><span class="line">  &lt;/Switch&gt;</span><br><span class="line">&lt;/main&gt;</span><br></pre></td></tr></table></figure></p>
+<p>为了效果，明显对header以及main部分加了背景色，如下图：<br><img src="/images/step4.gif" alt>  </p>
+<p>如果我们有多个布局怎么办? 比如常见的还有登录布局，往下看。</p>
+<h2 id="多个布局"><a href="#多个布局" class="headerlink" title="多个布局"></a>多个布局</h2><p>为实现多个布局我们将多个布局提取成多个组件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">/***** BasicLayout.jsx *****/</span><br><span class="line">&lt;div&gt;</span><br><span class="line">  &lt;h1&gt;BasicLayout!!&lt;/h1&gt;</span><br><span class="line">    &lt;Route exact path=&apos;/&apos; component=&#123;Home&#125; /&gt;</span><br><span class="line">    &lt;Route exact path=&apos;/movie&apos; component=&#123;Movie&#125; /&gt;</span><br><span class="line">    &lt;Route exact path=&apos;/book&apos; component=&#123;Book&#125; /&gt;</span><br><span class="line">&lt;/div&gt;  </span><br><span class="line"></span><br><span class="line">/***** LoginLayout.jsx *****/</span><br><span class="line">&lt;div&gt;</span><br><span class="line">  &lt;h1&gt;LoginLayout!!&lt;/h1&gt;</span><br><span class="line">  &lt;form action=&quot;&quot;&gt;</span><br><span class="line">    username： &lt;input type=&quot;text&quot; placeholder=&apos;please input username&apos;/&gt;</span><br><span class="line">    &lt;br /&gt;</span><br><span class="line">    password： &lt;input type=&quot;password&quot; placeholder=&apos;please input password&apos;/&gt;</span><br><span class="line">  &lt;/form&gt;</span><br><span class="line">&lt;/div&gt;</span><br><span class="line"></span><br><span class="line">/***** App.jsx *****/</span><br><span class="line">// 注意 有子路由的Route不要加exact不然会匹配不到子路由，</span><br><span class="line">&lt;Switch&gt;</span><br><span class="line">  &lt;Route path=&apos;/login&apos; component=&#123;LoginLayout&#125; /&gt;</span><br><span class="line">  &lt;Route path=&apos;/&apos; component=&#123;BasicLayout&#125; /&gt;</span><br><span class="line">&lt;/Switch&gt;</span><br></pre></td></tr></table></figure></p>
+<p>如下图：<br><img src="/images/step5.gif" alt>  </p>
+<h1 id="登录验证"><a href="#登录验证" class="headerlink" title="登录验证"></a>登录验证</h1><p>既然有登录布局 自然就需要有登录验证  </p>
+<p>官方推荐的做法是自己实现一个AuthRoute，如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">const AuthRoute = (props) =&gt; &#123;</span><br><span class="line">  const &#123; component:Component, ...rest &#125; = props;</span><br><span class="line"></span><br><span class="line">  // parcel 默认不支持rest参数， 需添加babel-plugin-transform-object-rest-spread 并添加到.babelrc文件中</span><br><span class="line">  // const rest = &#123;&#125;;</span><br><span class="line">  // for (const _key in props) &#123;</span><br><span class="line">  //   if(_key !== &apos;component&apos;) &#123;</span><br><span class="line">  //     rest[_key] = props[_key]</span><br><span class="line">  //   &#125;</span><br><span class="line">  // &#125;</span><br><span class="line"></span><br><span class="line">  return (&lt;Route</span><br><span class="line">    &#123;...rest&#125;</span><br><span class="line">    render=&#123;(props) =&gt; (</span><br><span class="line">      islogin()?</span><br><span class="line">      (&lt;Component &#123;...props&#125; /&gt;)</span><br><span class="line">      :</span><br><span class="line">      (&lt;Redirect to=&apos;/login&apos; /&gt;)</span><br><span class="line">    )&#125;</span><br><span class="line">  /&gt;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>此处有两个小坑，</p>
+<ol>
+<li>parcel默认不支持rest参数，具体看上面代码注释。</li>
+<li>Route组件的 component 和 render 都会在路径匹配时渲染组件，但component优先级较高，若两个属性同时出现render会被忽略。</li>
+</ol>
+<p>下面看下效果：<br>首先是未登录状态 任何路由都无法进入 只能停留在login页</p>
+<p><img src="/images/step6.gif" alt></p>
+<p>下面是登陆后的效果，任何路由都可以访问，登出后之能访问login页<br><img src="/images/step7.gif" alt></p>
+<h1 id="编程式导航"><a href="#编程式导航" class="headerlink" title="编程式导航"></a>编程式导航</h1><p>既然有了登录验证 那我们总不能让用户自己点其他路由跳转到首页吧！ 下面就来使用withRouter 在登陆成功后让代码手动跳转到首页  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">const &#123; history &#125; = this.props </span><br><span class="line">history.push(&apos;/&apos;);</span><br></pre></td></tr></table></figure>
+<p>被Route包裹的组件都会在props拥有history,match,location对象，使用hisory对象的push方法即可进行手动跳转。<br>效果如下图：<br><img src="/images/step8.gif" alt></p>
+<h1 id="withRouter"><a href="#withRouter" class="headerlink" title="withRouter"></a>withRouter</h1><p>若在Route组件之外想要访问 history，match，location对象并做一些操作呢？<br>这时候withRouter就排上用场了，<br>每次路由发生变化时Router包裹的组件会被重新渲染,<br>withRouter包裹的组件就可访问到路由信息对象，就可以响应路由变化</p>
+<p>我们改造一下导航部分 将其封装成一个Nav组件, 在export时用withRouter包裹。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">import &#123; withRouter, Link &#125; from &apos;react-router-dom&apos;;</span><br><span class="line"></span><br><span class="line">class Nav extends Component &#123;</span><br><span class="line">  render() &#123;</span><br><span class="line">    const activeStyle = &#123;</span><br><span class="line">      backgroundColor: &apos;#00a74a&apos;</span><br><span class="line">    &#125;</span><br><span class="line">    const path = this.props.location.pathname;</span><br><span class="line">    console.log(&apos;test&apos;, this.props)</span><br><span class="line">    return (</span><br><span class="line">      &lt;ul&gt;</span><br><span class="line">        &lt;li&gt;&lt;Link to=&apos;/login&apos; style=&#123;path === &apos;/login&apos;?activeStyle:&#123;&#125;&#125; &gt;login&lt;/Link &gt;&lt;/li&gt;</span><br><span class="line">        &lt;li&gt;&lt;Link to=&apos;/&apos; style=&#123;path === &apos;/&apos;?activeStyle:&#123;&#125;&#125; &gt;home&lt;/Link &gt;&lt;/li&gt;</span><br><span class="line">        &lt;li&gt;&lt;Link to=&apos;/movie&apos; style=&#123;path === &apos;/movie&apos;?activeStyle:&#123;&#125;&#125;&gt;movie&lt;/Link &gt;&lt;/li&gt;</span><br><span class="line">        &lt;li&gt;&lt;Link to=&apos;/book&apos; style=&#123;path === &apos;/book&apos;?activeStyle:&#123;&#125;&#125;&gt;book&lt;/Link &gt;&lt;/li&gt;</span><br><span class="line">      &lt;/ul&gt;</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">export default withRouter(Nav);</span><br></pre></td></tr></table></figure></p>
+<p>效果如下图：<br><img src="/images/step9.gif" alt>  </p>
+<p>以上就是一些react-router v4的一些基本使用。若有错误欢迎指出！  </p>
+<p><strong>Tips: 注意看文中的Route 和Router 就差一个字母 不要看花了眼哦</strong>   </p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/react-react-router/" rel="tag"># react react-router</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/09/04/webpack-react-ts/" rel="next" title="webpack-react-ts 搭建开发环境（一）">
+                <i class="fa fa-chevron-left"></i> webpack-react-ts 搭建开发环境（一）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/09/06/eventBus/" rel="prev" title="自己实现一个eventBus">
+                自己实现一个eventBus <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">wh</p>
+              <div class="site-description motion-element" itemprop="description">越努力，越幸运</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">12</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#匹配原理"><span class="nav-number">1.</span> <span class="nav-text">匹配原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基本使用"><span class="nav-number">2.</span> <span class="nav-text">基本使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#选择Router："><span class="nav-number">2.1.</span> <span class="nav-text">选择Router：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开始配置"><span class="nav-number">2.2.</span> <span class="nav-text">开始配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#初始配置"><span class="nav-number">2.2.1.</span> <span class="nav-text">初始配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用Switch组件"><span class="nav-number">2.2.2.</span> <span class="nav-text">使用Switch组件</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#布局"><span class="nav-number">3.</span> <span class="nav-text">布局</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#单个布局"><span class="nav-number">3.1.</span> <span class="nav-text">单个布局</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多个布局"><span class="nav-number">3.2.</span> <span class="nav-text">多个布局</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#登录验证"><span class="nav-number">4.</span> <span class="nav-text">登录验证</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#编程式导航"><span class="nav-number">5.</span> <span class="nav-text">编程式导航</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#withRouter"><span class="nav-number">6.</span> <span class="nav-text">withRouter</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wh</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.1.2</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.2"></script>
+
+  <script src="/js/motion.js?v=7.1.2"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.2"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.2"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.2"></script>
+<script src="/js/post-details.js?v=7.1.2"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.2"></script>
+
+
+  
+
+  
+
+  
+
+  
+  
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://wanghang.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://wang-hang.github.io/2018/09/06/react-router v4/";
+    this.page.identifier = "2018/09/06/react-router v4/";
+    this.page.title = 'React-Router v4.0 笔记';
+    };
+  function loadComments() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://wanghang.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', '' + +new Date());
+    (d.head || d.body).appendChild(s);
+  }
+  
+    window.addEventListener('load', loadComments, false);
+  
+</script>
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+  
+  
+  <script>
+    
+    function addCount(Counter) {
+      var $visitors = $('.leancloud_visitors');
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+
+      Counter('get', '/classes/Counter', { where: JSON.stringify({ url }) })
+        .done(function({ results }) {
+          if (results.length > 0) {
+            var counter = results[0];
+            
+            Counter('put', '/classes/Counter/' + counter.objectId, JSON.stringify({ time: { '__op': 'Increment', 'amount': 1 } }))
+            
+              .done(function() {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.time + 1);
+              })
+            
+              .fail(function ({ responseJSON }) {
+                console.log('Failed to save Visitor num, with error message: ' + responseJSON.error);
+              })
+          } else {
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text('Counter not initialized! More info at console err msg.');
+              console.error('ATTENTION! LeanCloud counter has security bug, see how to solve it here: https://github.com/theme-next/hexo-leancloud-counter-security. \n However, you can still use LeanCloud without security, by setting `security` option to `false`.');
+            
+          }
+        })
+        .fail(function ({ responseJSON }) {
+          console.log('LeanCloud Counter Error: ' + responseJSON.code + ' ' + responseJSON.error);
+        });
+    }
+    
+
+    $(function() {
+      $.get('https://app-router.leancloud.cn/2/route?appId=' + 'YDLi0ipkLyUH7WWoIWni9m5q-gzGzoHsz')
+        .done(function({ api_server }) {
+          var Counter = function(method, url, data) {
+            return $.ajax({
+              method: method,
+              url: 'https://' + api_server + '/1.1' + url,
+              headers: {
+                'X-LC-Id': 'YDLi0ipkLyUH7WWoIWni9m5q-gzGzoHsz',
+                'X-LC-Key': 'kghL1tbFSIG7QNhCqKagggCh',
+                'Content-Type': 'application/json',
+              },
+              data: data
+            });
+          };
+          
+            addCount(Counter);
+          
+        });
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

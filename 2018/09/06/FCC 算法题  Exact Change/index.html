@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.2">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.2" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="目标设计一个收银程序 checkCashRegister() ，其把购买价格(price)作为第一个参数 , 付款金额(cash)作为第二个参数, 和收银机中零钱 (cid) 作为第三个参数. cid 是一个二维数组，存着当前可用的找零. 当收银机中的钱不够找零时返回字符串 “Insufficient Funds”. 如果正好则返回字符串 “Closed”. 否则, 返回应找回的零钱列表,且由大到">
+<meta name="keywords" content="fcc,算法,freeCodeCamp">
+<meta property="og:type" content="article">
+<meta property="og:title" content="FCC 算法题  Exact Change">
+<meta property="og:url" content="https://wang-hang.github.io/2018/09/06/FCC 算法题  Exact Change/index.html">
+<meta property="og:site_name" content="Mr.w">
+<meta property="og:description" content="目标设计一个收银程序 checkCashRegister() ，其把购买价格(price)作为第一个参数 , 付款金额(cash)作为第二个参数, 和收银机中零钱 (cid) 作为第三个参数. cid 是一个二维数组，存着当前可用的找零. 当收银机中的钱不够找零时返回字符串 “Insufficient Funds”. 如果正好则返回字符串 “Closed”. 否则, 返回应找回的零钱列表,且由大到">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-06-10T09:14:03.906Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="FCC 算法题  Exact Change">
+<meta name="twitter:description" content="目标设计一个收银程序 checkCashRegister() ，其把购买价格(price)作为第一个参数 , 付款金额(cash)作为第二个参数, 和收银机中零钱 (cid) 作为第三个参数. cid 是一个二维数组，存着当前可用的找零. 当收银机中的钱不够找零时返回字符串 “Insufficient Funds”. 如果正好则返回字符串 “Closed”. 否则, 返回应找回的零钱列表,且由大到">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://wang-hang.github.io/2018/09/06/FCC 算法题  Exact Change/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>FCC 算法题  Exact Change | Mr.w</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Mr.w</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">wanghang</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://wang-hang.github.io/2018/09/06/FCC 算法题  Exact Change/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="wh">
+      <meta itemprop="description" content="越努力，越幸运">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mr.w">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">FCC 算法题  Exact Change
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-09-06 17:29:18" itemprop="dateCreated datePublished" datetime="2018-09-06T17:29:18+08:00">2018-09-06</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-10 17:14:03" itemprop="dateModified" datetime="2019-06-10T17:14:03+08:00">2019-06-10</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/freeCodeCamp/" itemprop="url" rel="index"><span itemprop="name">freeCodeCamp</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+              
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">评论数：</span>
+                <a href="/2018/09/06/FCC 算法题  Exact Change/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/09/06/FCC 算法题  Exact Change/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+            <span id="/2018/09/06/FCC 算法题  Exact Change/" class="leancloud_visitors" data-flag-title="FCC 算法题  Exact Change">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读次数：</span>
+              
+                <span class="leancloud-visitors-count"></span>
+            </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h1><p>设计一个收银程序 checkCashRegister() ，其把购买价格(price)作为第一个参数 , 付款金额<br>(cash)作为第二个参数, 和收银机中零钱 (cid) 作为第三个参数.</p>
+<p>cid 是一个二维数组，存着当前可用的找零.</p>
+<p>当收银机中的钱不够找零时返回字符串 “Insufficient Funds”. 如果正好则返回字符串 “Closed”.</p>
+<p>否则, 返回应找回的零钱列表,且由大到小存在二维数组中.<br><a id="more"></a></p>
+<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><ol>
+<li>先计算总剩余钱数totalCash 和 需要找零的钱数change  <ol>
+<li>total&lt;change 则return “不够找零”  <ol start="2">
+<li>total=change 则 return “正好找零 closed”</li>
+</ol>
+</li>
+</ol>
+</li>
+<li>可以找零了  <ol>
+<li>从大额钱币开始找  </li>
+<li>先计算找零change需要当前面值的的最大数量neednum和目前收银机里面剩余钱币的数nownum  <ol>
+<li>比较 当前面值需要的数量neeednum 和当前面值剩余的总数量nownum      </li>
+<li>两者取最小值 同时推入数组 然后找零减去相应的数额  </li>
+<li>最后判断 需要的找零change是否等于0 等于零说明找完了 不等于说明零钱不够找不开  </li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<h1 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line">function checkCashRegister(price, cash, cid) &#123;</span><br><span class="line">	cash*=100; //将美元转换成美分 都是整数便于计算 最后要转换回来</span><br><span class="line">	price*=100;</span><br><span class="line">  var change=cash-price; //需要的找零</span><br><span class="line">  var totalCash=getToalCash(cid); //收银机剩余总钱数</span><br><span class="line">  var result=[]; //存放结果数组</span><br><span class="line">  console.log(&quot;收银机里面的总钱数： &quot;+totalCash+&quot; 需要的找零： &quot;+change);</span><br><span class="line">  if(totalCash&lt;change)&#123; //收银机总钱数小于要找零</span><br><span class="line">  	return &quot;Insufficient Funds&quot;;</span><br><span class="line">  &#125;</span><br><span class="line">  else if(totalCash===change)&#123;//收银机总钱数正好等于要找零</span><br><span class="line">  	return &quot;Closed&quot;;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  if(totalCash&gt;change)&#123;//收银机总钱数大于要找零</span><br><span class="line">//遍历数组开始找零</span><br><span class="line">	for(let i=cid.length-1;i&gt;=0;i--)&#123;</span><br><span class="line">		</span><br><span class="line">			//1：获取需要找零的需要当前面额的最大数量 needNum</span><br><span class="line">			var nowValue=transformCoin(cid[i][0]); //当前面值</span><br><span class="line">			var needNum=Math.floor(change/nowValue);</span><br><span class="line">			console.log(&quot;当前面额： &quot;+transformCoin(cid[i][0]));</span><br><span class="line">			console.log(&quot;需要当前面额的最大数量 needNum: &quot;+needNum);</span><br><span class="line">			//2 获取现有的数额最大数量</span><br><span class="line">			var nowNum=Math.floor(cid[i][1]*100/nowValue);</span><br><span class="line">			console.log(&quot;目前收银机里当前面额剩余最大数量nowNum： &quot;+nowNum);</span><br><span class="line">			//3 取 needNum 和nowNum 的最小值 作为要取得数量finalNum</span><br><span class="line">			var finalNum=Math.min(nowNum,needNum);</span><br><span class="line">			console.log(&quot;最终需要的当前面额数目为： &quot;+finalNum);</span><br><span class="line"></span><br><span class="line">			if(finalNum!==0)&#123;//进入需要的面值 对其操作</span><br><span class="line">				// console.log([cid[i][0],finalNum*nowValue/100]);</span><br><span class="line">				result.push([cid[i][0],finalNum*nowValue/100]);</span><br><span class="line">				change-=finalNum*nowValue;</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">	//找零结束 判断找零change最后是否为0 </span><br><span class="line">	if(change==0)&#123; //change 最后为0 说明完成找零 </span><br><span class="line">		console.log(result);</span><br><span class="line">		return result;</span><br><span class="line">	&#125;</span><br><span class="line">	else&#123;//change 最后不为0 说明零钱不够 无法完成找零</span><br><span class="line">		return &quot;Insufficient Funds&quot;;</span><br><span class="line">	&#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    function getToalCash(arr)&#123;  //获取收银机里面的剩余钱数 传入cid数组</span><br><span class="line">    	var sum=0;</span><br><span class="line">    	for(let i=0;i&lt;arr.length;i++)&#123;</span><br><span class="line">    		sum+=arr[i][1]*100;</span><br><span class="line">    	&#125;</span><br><span class="line">    	return sum;</span><br><span class="line">    &#125;</span><br><span class="line">    function transformCoin(coin)&#123; //转换钱币到美分</span><br><span class="line">    	switch(coin)&#123;</span><br><span class="line">    		case &apos;PENNY&apos;:return 1;</span><br><span class="line">    		case &apos;NICKEL&apos;:return 5;</span><br><span class="line">    		case &apos;DIME&apos;:return 10;</span><br><span class="line">    		case &apos;QUARTER&apos;:return 25;</span><br><span class="line">    		case &apos;ONE&apos;:return 100;</span><br><span class="line">    		case &apos;FIVE&apos;:return 500;</span><br><span class="line">    		case &apos;TEN&apos;:return 1000;</span><br><span class="line">    		case &apos;TWENTY&apos;:return 2000;</span><br><span class="line">    		case &apos;ONE HUNDRED&apos;:return 10000;</span><br><span class="line">    	&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/fcc/" rel="tag"># fcc</a>
+          
+            <a href="/tags/算法/" rel="tag"># 算法</a>
+          
+            <a href="/tags/freeCodeCamp/" rel="tag"># freeCodeCamp</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/09/06/FCC 算法题 Caesars Cipher/" rel="next" title="FCC 题目 Caesars Cipher">
+                <i class="fa fa-chevron-left"></i> FCC 题目 Caesars Cipher
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/09/06/FCC 算法题 Profile Lookup /" rel="prev" title="FCC 题目 Profile Lookup">
+                FCC 题目 Profile Lookup <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">wh</p>
+              <div class="site-description motion-element" itemprop="description">越努力，越幸运</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">12</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#目标"><span class="nav-number">1.</span> <span class="nav-text">目标</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#思路"><span class="nav-number">2.</span> <span class="nav-text">思路</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#代码"><span class="nav-number">3.</span> <span class="nav-text">代码</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wh</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.1.2</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.2"></script>
+
+  <script src="/js/motion.js?v=7.1.2"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.2"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.2"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.2"></script>
+<script src="/js/post-details.js?v=7.1.2"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.2"></script>
+
+
+  
+
+  
+
+  
+
+  
+  
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://wanghang.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://wang-hang.github.io/2018/09/06/FCC 算法题  Exact Change/";
+    this.page.identifier = "2018/09/06/FCC 算法题  Exact Change/";
+    this.page.title = 'FCC 算法题  Exact Change';
+    };
+  function loadComments() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://wanghang.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', '' + +new Date());
+    (d.head || d.body).appendChild(s);
+  }
+  
+    window.addEventListener('load', loadComments, false);
+  
+</script>
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+  
+  
+  <script>
+    
+    function addCount(Counter) {
+      var $visitors = $('.leancloud_visitors');
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+
+      Counter('get', '/classes/Counter', { where: JSON.stringify({ url }) })
+        .done(function({ results }) {
+          if (results.length > 0) {
+            var counter = results[0];
+            
+            Counter('put', '/classes/Counter/' + counter.objectId, JSON.stringify({ time: { '__op': 'Increment', 'amount': 1 } }))
+            
+              .done(function() {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.time + 1);
+              })
+            
+              .fail(function ({ responseJSON }) {
+                console.log('Failed to save Visitor num, with error message: ' + responseJSON.error);
+              })
+          } else {
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text('Counter not initialized! More info at console err msg.');
+              console.error('ATTENTION! LeanCloud counter has security bug, see how to solve it here: https://github.com/theme-next/hexo-leancloud-counter-security. \n However, you can still use LeanCloud without security, by setting `security` option to `false`.');
+            
+          }
+        })
+        .fail(function ({ responseJSON }) {
+          console.log('LeanCloud Counter Error: ' + responseJSON.code + ' ' + responseJSON.error);
+        });
+    }
+    
+
+    $(function() {
+      $.get('https://app-router.leancloud.cn/2/route?appId=' + 'YDLi0ipkLyUH7WWoIWni9m5q-gzGzoHsz')
+        .done(function({ api_server }) {
+          var Counter = function(method, url, data) {
+            return $.ajax({
+              method: method,
+              url: 'https://' + api_server + '/1.1' + url,
+              headers: {
+                'X-LC-Id': 'YDLi0ipkLyUH7WWoIWni9m5q-gzGzoHsz',
+                'X-LC-Key': 'kghL1tbFSIG7QNhCqKagggCh',
+                'Content-Type': 'application/json',
+              },
+              data: data
+            });
+          };
+          
+            addCount(Counter);
+          
+        });
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
