@@ -1,22 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title><![CDATA[FCC 题目 Profile Lookup]]></title>
-    <url>%2F2018%2F09%2F06%2FFCC%20%E7%AE%97%E6%B3%95%E9%A2%98%20Profile%20Lookup%20%2F</url>
-    <content type="text"><![CDATA[要求：我们有一个对象数组，里面存储着通讯录。 函数 lookUp 有两个预定义参数：firstName值和prop属性 。 函数将会检查通讯录是否存在一个联系人的firstName属性等于firstName值，还会检查对应联系人是否存在 prop属性。 如果它们都存在，函数返回prop属性对应的值。 如果firstName 值不存在，返回 “No such contact”。 如果prop 属性不存在，返回 “No such property”。 实现目标：“Kristian”, “lastName” 应该返回 “Vos”“Sherlock”, “likes” 应该返回 [“Intriguing Cases”, “Violin”]“Harry”,”likes” 应该返回一个数组“Bob”, “number” 应该返回 “No such contact”“Akira”, “address” 应该返回 “No such property” 源代码：12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849//Setupvar contacts = [ &#123; &quot;firstName&quot;: &quot;Akira&quot;, &quot;lastName&quot;: &quot;Laine&quot;, &quot;number&quot;: &quot;0543236543&quot;, &quot;likes&quot;: [&quot;Pizza&quot;, &quot;Coding&quot;, &quot;Brownie Points&quot;] &#125;, &#123; &quot;firstName&quot;: &quot;Harry&quot;, &quot;lastName&quot;: &quot;Potter&quot;, &quot;number&quot;: &quot;0994372684&quot;, &quot;likes&quot;: [&quot;Hogwarts&quot;, &quot;Magic&quot;, &quot;Hagrid&quot;] &#125;, &#123; &quot;firstName&quot;: &quot;Sherlock&quot;, &quot;lastName&quot;: &quot;Holmes&quot;, &quot;number&quot;: &quot;0487345643&quot;, &quot;likes&quot;: [&quot;Intriguing Cases&quot;, &quot;Violin&quot;] &#125;, &#123; &quot;firstName&quot;: &quot;Kristian&quot;, &quot;lastName&quot;: &quot;Vos&quot;, &quot;number&quot;: &quot;unknown&quot;, &quot;likes&quot;: [&quot;Javascript&quot;, &quot;Gaming&quot;, &quot;Foxes&quot;] &#125;];function lookUp(firstName, prop)&#123;// Only change code below this line for(var i=0;i&lt;contacts.length;i++) &#123; if(firstName==contacts[i].firstName) &#123; if(contacts[i].hasOwnProperty(prop)) &#123; return contacts[i][prop]; &#125; else &#123; return &quot;No such property&quot;; &#125; &#125; &#125; return &quot;No such contact&quot;;&#125;// Change these values to test your functionlookUp(&quot;Kristian&quot;, &quot;lastName&quot;); 笔记在使用Object.hasOwnProperty（）时 注意括号内的是否加引号，如果是变量名不加 如果只是字符串要加调用 contacts[i][prop]时 第二个括号内如果是变量名不加引号 是字符串时要加]]></content>
+    <title><![CDATA[JS中的继承]]></title>
+    <url>%2F2019%2F06%2F27%2FJS%20%E4%B8%AD%E7%9A%84%E7%BB%A7%E6%89%BF%2F</url>
+    <content type="text"><![CDATA[实现JS中的继承常见的继承方法： 构造函数继承 原型继承 组合继承 利用构造函数继承12345678910111213141516function Parent()&#123; this.like = 'game' this.age = 66&#125;Parent.prototype.say = function()&#123; console.log('parent say')&#125;function Child()&#123; Parent.call(this) this.age = 11&#125;const child = new Child()console.log(child) 缺点: 不能继承父类原型上的属性 利用原型继承1234567891011121314151617function Parent()&#123; this.like = 'game' this.age = 66&#125;Parent.prototype.say = function()&#123; console.log('parent say')&#125;function Child()&#123; this.age = 11&#125;Child.prototype = new Parent()const child = new Child()console.log(child) 缺点: 不能继承父类构造器内的属性 组合式继承12345678910111213141516171819function Parent()&#123; this.like = 'game' this.age = 66 console.log('call parent constructor')&#125;Parent.prototype.say = function()&#123; console.log('parent say')&#125;function Child()&#123; this.age = 11 Parent.call(this)&#125;Child.prototype = new Parent()const child = new Child()console.log(child) 优点: 可以继承到原型和构造器的属性缺点: 调用了两次parent的构造方法 组合式继承优化 11234567891011121314151617181920function Parent()&#123; this.like = 'game' this.age = 66 console.log('call parent constructor')&#125;Parent.prototype.say = function()&#123; console.log('parent say')&#125;function Child()&#123; this.age = 11 Parent.call(this)&#125;Child.prototype = Object.create(Parent.prototype)const child = new Child()console.log(child)console.log(child.constructor) 优点: 修复了上个继承的问题缺点: 打印child的构造器函数发现是parent的构造器 影响对实例类型的判断 组合式继承优化 212345678910111213141516171819202122function Parent()&#123; this.like = 'game' this.age = 66 console.log('call parent constructor')&#125;Parent.prototype.say = function()&#123; console.log('parent say')&#125;function Child()&#123; this.age = 11 Parent.call(this)&#125;Child.prototype = Object.create(Parent.prototype,&#123; constructor: &#123;value: Child&#125;&#125;)const child = new Child()console.log(child)console.log(child.constructor) 完]]></content>
       <categories>
-        <category>freeCodeCamp</category>
+        <category>JavaScript</category>
       </categories>
       <tags>
-        <tag>fcc</tag>
-        <tag>算法</tag>
-        <tag>freeCodeCamp</tag>
+        <tag>javescript</tag>
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[FCC题目 Check for Palindromes]]></title>
-    <url>%2F2018%2F09%2F06%2FFCC%20%E7%AE%97%E6%B3%95%E9%A2%98%20%20Check%20for%20Palindromes%2F</url>
-    <content type="text"><![CDATA[要求如果给定的字符串是回文，返回true，反之，返回false。 如果一个字符串忽略标点符号、大小写和空格，正着读和反着读一模一样，那么这个字符串就是palindrome(回文)。 注意你需要去掉字符串多余的标点符号和空格，然后把字符串转化成小写来验证此字符串是否为回文。 函数参数的值可以为”racecar”，”RaceCar”和”race CAR”。 String.replace()String.toLowerCase() 起初看到这么一个要求 小case吗！！分分钟搞定啊！于是如下代码出现了 1234567891011function palindrome(str)&#123; var arr=str.split(&apos;&apos;);//分割字符串为数组 var newarr=arr.reverse();//将数组反转 //比较数组 for(var i=0;i&lt;arr.length;i++)&#123; if(arr[i]!==newarr[i])&#123; return false; &#125; &#125; return true; &#125; 理所当然 代码GG 于是google之，发现 reverse() 这个方法是在执行后会改变原数组而不是返回一个新数组于是修改代码如下 123456789101112function palindrome(str)&#123; var arr=str.split(&apos;&apos;);//分割字符串为数组 var newarr=str.split(&apos;&apos;);//赋给另一个数组用来保存 arr.reverse();//将数组反转 //比较数组 for(var i=0;i&lt;arr.length;i++)&#123; if(arr2[i]!==newarr[i])&#123; return false; &#125; &#125; return true; &#125; 然后 又GG我又去检查发现题目给的样例里面还有大小写，特殊字符！！！这才想到了题目给的提示repalce() 利用正则替换字符串totoLowerCase() 将字符串转换成小写再次修改代码 12345678910111213141516171819function palindrome(str) &#123; // Good luck! var str1=str.replace(/\W+/g,&quot;&quot;); str1=str1.replace(/\_+/g,&quot;&quot;); str1=str1.toLowerCase(); var arr=str1.split(&apos;&apos;);//定义将字符串打散后的数组 var newarr=str1.split(&apos;&apos;);//将该数组再次保存 后面会调用reverse方法将其改变， arr会发生变化 ，所以将数组另存一份为newarr arr.reverse();//反转数组 //比较数组 for(var i=0;i&lt;arr.length;i++)&#123; if(arr[i]!==newarr[i])&#123; return false; &#125; &#125; return true; &#125; palindrome(&quot;not a palindrome&quot;); Ctrl+Enter 完美！]]></content>
+    <title><![CDATA[FCC 题目 Pig Latin]]></title>
+    <url>%2F2018%2F09%2F06%2FFCC%20%E7%AE%97%E6%B3%95%E9%A2%98%20Pig%20Latin%2F</url>
+    <content type="text"><![CDATA[要求把指定的字符串翻译成 pig latin。 Pig Latin 把一个英文单词的第一个辅音或辅音丛（consonant cluster）移到词尾，然后加上后缀 “ay”。 如果单词以元音开始，你只需要在词尾添加 “way” 就可以了。 提示12345Array.push() Array.join() String.substr() String.split() Array.splice() 思路第一步： 分割字符串为数组第二步： 判定首字母是是元音字母还是辅音字母，首字母是元音字母直接拼接原字符串 后加“way”第三步： 首字符是辅音音字母计算辅音或辅音从的长度len第四步： 取出辅音从放到数组末尾，删除数组前方辅音从第五步： 将数组拼接为字符串 再跟“ay”拼接 返回最后结果 源代码123456789101112131415161718192021222324252627function translate(str) &#123; var reg=new RegExp(/[aeiouAEIOU]/); var len=0; var arr=str.split("");//分解字符串 var newarr=[]; if(!reg.test(arr[0]))&#123; //for循环计算出元音字母数 for(var i=0;i&lt;arr.length;i++)&#123; if(!reg.test(arr[i]))&#123; len++; &#125; else&#123; break; &#125; &#125; var subStr=str.substr(0,len); //取出要放到后面的子字符串 arr.splice(0,len);//删除辅音字母 arr.push(subStr);//将辅音子字符串放到数组最后面 str=arr.join("")+"ay";//将数组组合成字符串然后拼接 &#125; else&#123; str+="way";//拼接字符串 &#125; console.log(str); return str; &#125;translate("onsonant");]]></content>
       <categories>
         <category>freeCodeCamp</category>
       </categories>
@@ -40,45 +38,6 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[FCC 题目 Missing letters]]></title>
-    <url>%2F2018%2F09%2F06%2FFCC%20%E7%AE%97%E6%B3%95%E9%A2%98%20Missing%20letters%2F</url>
-    <content type="text"><![CDATA[要求从传递进来的字母序列中找到缺失的字母并返回它。 如果所有字母都在序列中，返回 undefined。 提示12String.charCodeAt() String.fromCharCode() 源代码1234567891011121314151617function fearNotLetter(str) &#123; var arr=str.split(&quot;&quot;); var start=str.charCodeAt(0); //字符串起始的unicode编码 var end=str.charCodeAt(str.length-1); //字符串末尾的unicode编码 for(var i=start;i&lt;=end;i++)&#123; //遍历start到end的unicode编码 找出缺失的字母 //判断从start到end的字母是否跟传入的str的每一个字母相等，不相等说明缺失字母 if(String.fromCharCode(i)!==arr[i-start])&#123; console.log(String.fromCharCode(i)); str=String.fromCharCode(i); return str; &#125; &#125; console.log(undefined); return undefined;&#125;fearNotLetter(&quot;abcdf&quot;);]]></content>
-      <categories>
-        <category>freeCodeCamp</category>
-      </categories>
-      <tags>
-        <tag>fcc</tag>
-        <tag>算法</tag>
-        <tag>freeCodeCamp</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[FCC 题目 Caesars Cipher]]></title>
-    <url>%2F2018%2F09%2F06%2FFCC%20%E7%AE%97%E6%B3%95%E9%A2%98%20Caesars%20Cipher%2F</url>
-    <content type="text"><![CDATA[要求让上帝的归上帝，凯撒的归凯撒。 下面我们来介绍风靡全球的凯撒密码Caesar cipher，又叫移位密码。 移位密码也就是密码中的字母会按照指定的数量来做移位。 一个常见的案例就是ROT13密码，字母会移位13个位置。由’A’ ↔ ‘N’, ‘B’ ↔ ‘O’，以此类推。 写一个ROT13函数，实现输入加密字符串，输出解密字符串。 所有的字母都是大写，不要转化任何非字母形式的字符(例如：空格，标点符号)，遇到这些特殊字符，跳过它们。 当你完成不了挑战的时候，记得开大招’Read-Search-Ask’。 这是一些对你有帮助的资源: String.charCodeAt()String.fromCharCode() 代码12345678910111213141516171819202122function rot13(str) &#123; // LBH QVQ VG! var arr=str.split(&apos;&apos;); console.log(arr); for(var i=0;i&lt;arr.length;i++)&#123; var num1=arr[i].charCodeAt(0);//输入的加密字符编码 var num2=num1-13; //输入的加密字符编码解密后-13用来解密 if(num1&gt;=65&amp;&amp;num1&lt;=90)&#123; //判断字符是不是字母 if(num2&lt;65)&#123; //num1-13超出字母的编码表 arr[i]=String.fromCharCode(num1+13);// 90-(13-(num1-64)) &#125; else&#123; arr[i]=String.fromCharCode(num2); &#125; &#125; else&#123; arr[i]=arr[i]; &#125; str=arr.join(&quot;&quot;); &#125; return str; &#125; 要点ACCII编码表 里面的字母编码]]></content>
-      <categories>
-        <category>freeCodeCamp</category>
-      </categories>
-      <tags>
-        <tag>fcc</tag>
-        <tag>算法</tag>
-        <tag>freeCodeCamp</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[FCC 题目 Pig Latin]]></title>
-    <url>%2F2018%2F09%2F06%2FFCC%20%E7%AE%97%E6%B3%95%E9%A2%98%20Pig%20Latin%2F</url>
-    <content type="text"><![CDATA[要求把指定的字符串翻译成 pig latin。 Pig Latin 把一个英文单词的第一个辅音或辅音丛（consonant cluster）移到词尾，然后加上后缀 “ay”。 如果单词以元音开始，你只需要在词尾添加 “way” 就可以了。 提示12345Array.push() Array.join() String.substr() String.split() Array.splice() 思路第一步： 分割字符串为数组第二步： 判定首字母是是元音字母还是辅音字母，首字母是元音字母直接拼接原字符串 后加“way”第三步： 首字符是辅音音字母计算辅音或辅音从的长度len第四步： 取出辅音从放到数组末尾，删除数组前方辅音从第五步： 将数组拼接为字符串 再跟“ay”拼接 返回最后结果 源代码123456789101112131415161718192021222324252627function translate(str) &#123; var reg=new RegExp(/[aeiouAEIOU]/); var len=0; var arr=str.split("");//分解字符串 var newarr=[]; if(!reg.test(arr[0]))&#123; //for循环计算出元音字母数 for(var i=0;i&lt;arr.length;i++)&#123; if(!reg.test(arr[i]))&#123; len++; &#125; else&#123; break; &#125; &#125; var subStr=str.substr(0,len); //取出要放到后面的子字符串 arr.splice(0,len);//删除辅音字母 arr.push(subStr);//将辅音子字符串放到数组最后面 str=arr.join("")+"ay";//将数组组合成字符串然后拼接 &#125; else&#123; str+="way";//拼接字符串 &#125; console.log(str); return str; &#125;translate("onsonant");]]></content>
-      <categories>
-        <category>freeCodeCamp</category>
-      </categories>
-      <tags>
-        <tag>fcc</tag>
-        <tag>算法</tag>
-        <tag>freeCodeCamp</tag>
-      </tags>
-  </entry>
-  <entry>
     <title><![CDATA[FCC 算法题 Exact Change]]></title>
     <url>%2F2018%2F09%2F06%2FFCC%20%E7%AE%97%E6%B3%95%E9%A2%98%20%20Exact%20Change%2F</url>
     <content type="text"><![CDATA[目标设计一个收银程序 checkCashRegister() ，其把购买价格(price)作为第一个参数 , 付款金额(cash)作为第二个参数, 和收银机中零钱 (cid) 作为第三个参数. cid 是一个二维数组，存着当前可用的找零. 当收银机中的钱不够找零时返回字符串 “Insufficient Funds”. 如果正好则返回字符串 “Closed”. 否则, 返回应找回的零钱列表,且由大到小存在二维数组中. 思路 先计算总剩余钱数totalCash 和 需要找零的钱数change total&lt;change 则return “不够找零” total=change 则 return “正好找零 closed” 可以找零了 从大额钱币开始找 先计算找零change需要当前面值的的最大数量neednum和目前收银机里面剩余钱币的数nownum 比较 当前面值需要的数量neeednum 和当前面值剩余的总数量nownum 两者取最小值 同时推入数组 然后找零减去相应的数额 最后判断 需要的找零change是否等于0 等于零说明找完了 不等于说明零钱不够找不开 代码12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970function checkCashRegister(price, cash, cid) &#123; cash*=100; //将美元转换成美分 都是整数便于计算 最后要转换回来 price*=100; var change=cash-price; //需要的找零 var totalCash=getToalCash(cid); //收银机剩余总钱数 var result=[]; //存放结果数组 console.log(&quot;收银机里面的总钱数： &quot;+totalCash+&quot; 需要的找零： &quot;+change); if(totalCash&lt;change)&#123; //收银机总钱数小于要找零 return &quot;Insufficient Funds&quot;; &#125; else if(totalCash===change)&#123;//收银机总钱数正好等于要找零 return &quot;Closed&quot;; &#125; if(totalCash&gt;change)&#123;//收银机总钱数大于要找零//遍历数组开始找零 for(let i=cid.length-1;i&gt;=0;i--)&#123; //1：获取需要找零的需要当前面额的最大数量 needNum var nowValue=transformCoin(cid[i][0]); //当前面值 var needNum=Math.floor(change/nowValue); console.log(&quot;当前面额： &quot;+transformCoin(cid[i][0])); console.log(&quot;需要当前面额的最大数量 needNum: &quot;+needNum); //2 获取现有的数额最大数量 var nowNum=Math.floor(cid[i][1]*100/nowValue); console.log(&quot;目前收银机里当前面额剩余最大数量nowNum： &quot;+nowNum); //3 取 needNum 和nowNum 的最小值 作为要取得数量finalNum var finalNum=Math.min(nowNum,needNum); console.log(&quot;最终需要的当前面额数目为： &quot;+finalNum); if(finalNum!==0)&#123;//进入需要的面值 对其操作 // console.log([cid[i][0],finalNum*nowValue/100]); result.push([cid[i][0],finalNum*nowValue/100]); change-=finalNum*nowValue; &#125; &#125; //找零结束 判断找零change最后是否为0 if(change==0)&#123; //change 最后为0 说明完成找零 console.log(result); return result; &#125; else&#123;//change 最后不为0 说明零钱不够 无法完成找零 return &quot;Insufficient Funds&quot;; &#125; &#125; function getToalCash(arr)&#123; //获取收银机里面的剩余钱数 传入cid数组 var sum=0; for(let i=0;i&lt;arr.length;i++)&#123; sum+=arr[i][1]*100; &#125; return sum; &#125; function transformCoin(coin)&#123; //转换钱币到美分 switch(coin)&#123; case &apos;PENNY&apos;:return 1; case &apos;NICKEL&apos;:return 5; case &apos;DIME&apos;:return 10; case &apos;QUARTER&apos;:return 25; case &apos;ONE&apos;:return 100; case &apos;FIVE&apos;:return 500; case &apos;TEN&apos;:return 1000; case &apos;TWENTY&apos;:return 2000; case &apos;ONE HUNDRED&apos;:return 10000; &#125; &#125;&#125;]]></content>
@@ -92,9 +51,74 @@
       </tags>
   </entry>
   <entry>
+    <title><![CDATA[FCC 题目 Profile Lookup]]></title>
+    <url>%2F2018%2F09%2F06%2FFCC%20%E7%AE%97%E6%B3%95%E9%A2%98%20Profile%20Lookup%20%2F</url>
+    <content type="text"><![CDATA[要求：我们有一个对象数组，里面存储着通讯录。 函数 lookUp 有两个预定义参数：firstName值和prop属性 。 函数将会检查通讯录是否存在一个联系人的firstName属性等于firstName值，还会检查对应联系人是否存在 prop属性。 如果它们都存在，函数返回prop属性对应的值。 如果firstName 值不存在，返回 “No such contact”。 如果prop 属性不存在，返回 “No such property”。 实现目标：“Kristian”, “lastName” 应该返回 “Vos”“Sherlock”, “likes” 应该返回 [“Intriguing Cases”, “Violin”]“Harry”,”likes” 应该返回一个数组“Bob”, “number” 应该返回 “No such contact”“Akira”, “address” 应该返回 “No such property” 源代码：12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849//Setupvar contacts = [ &#123; &quot;firstName&quot;: &quot;Akira&quot;, &quot;lastName&quot;: &quot;Laine&quot;, &quot;number&quot;: &quot;0543236543&quot;, &quot;likes&quot;: [&quot;Pizza&quot;, &quot;Coding&quot;, &quot;Brownie Points&quot;] &#125;, &#123; &quot;firstName&quot;: &quot;Harry&quot;, &quot;lastName&quot;: &quot;Potter&quot;, &quot;number&quot;: &quot;0994372684&quot;, &quot;likes&quot;: [&quot;Hogwarts&quot;, &quot;Magic&quot;, &quot;Hagrid&quot;] &#125;, &#123; &quot;firstName&quot;: &quot;Sherlock&quot;, &quot;lastName&quot;: &quot;Holmes&quot;, &quot;number&quot;: &quot;0487345643&quot;, &quot;likes&quot;: [&quot;Intriguing Cases&quot;, &quot;Violin&quot;] &#125;, &#123; &quot;firstName&quot;: &quot;Kristian&quot;, &quot;lastName&quot;: &quot;Vos&quot;, &quot;number&quot;: &quot;unknown&quot;, &quot;likes&quot;: [&quot;Javascript&quot;, &quot;Gaming&quot;, &quot;Foxes&quot;] &#125;];function lookUp(firstName, prop)&#123;// Only change code below this line for(var i=0;i&lt;contacts.length;i++) &#123; if(firstName==contacts[i].firstName) &#123; if(contacts[i].hasOwnProperty(prop)) &#123; return contacts[i][prop]; &#125; else &#123; return &quot;No such property&quot;; &#125; &#125; &#125; return &quot;No such contact&quot;;&#125;// Change these values to test your functionlookUp(&quot;Kristian&quot;, &quot;lastName&quot;); 笔记在使用Object.hasOwnProperty（）时 注意括号内的是否加引号，如果是变量名不加 如果只是字符串要加调用 contacts[i][prop]时 第二个括号内如果是变量名不加引号 是字符串时要加]]></content>
+      <categories>
+        <category>freeCodeCamp</category>
+      </categories>
+      <tags>
+        <tag>fcc</tag>
+        <tag>算法</tag>
+        <tag>freeCodeCamp</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[FCC 题目 Missing letters]]></title>
+    <url>%2F2018%2F09%2F06%2FFCC%20%E7%AE%97%E6%B3%95%E9%A2%98%20Missing%20letters%2F</url>
+    <content type="text"><![CDATA[要求从传递进来的字母序列中找到缺失的字母并返回它。 如果所有字母都在序列中，返回 undefined。 提示12String.charCodeAt() String.fromCharCode() 源代码1234567891011121314151617function fearNotLetter(str) &#123; var arr=str.split(&quot;&quot;); var start=str.charCodeAt(0); //字符串起始的unicode编码 var end=str.charCodeAt(str.length-1); //字符串末尾的unicode编码 for(var i=start;i&lt;=end;i++)&#123; //遍历start到end的unicode编码 找出缺失的字母 //判断从start到end的字母是否跟传入的str的每一个字母相等，不相等说明缺失字母 if(String.fromCharCode(i)!==arr[i-start])&#123; console.log(String.fromCharCode(i)); str=String.fromCharCode(i); return str; &#125; &#125; console.log(undefined); return undefined;&#125;fearNotLetter(&quot;abcdf&quot;);]]></content>
+      <categories>
+        <category>freeCodeCamp</category>
+      </categories>
+      <tags>
+        <tag>fcc</tag>
+        <tag>算法</tag>
+        <tag>freeCodeCamp</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[FCC题目 Check for Palindromes]]></title>
+    <url>%2F2018%2F09%2F06%2FFCC%20%E7%AE%97%E6%B3%95%E9%A2%98%20%20Check%20for%20Palindromes%2F</url>
+    <content type="text"><![CDATA[要求如果给定的字符串是回文，返回true，反之，返回false。 如果一个字符串忽略标点符号、大小写和空格，正着读和反着读一模一样，那么这个字符串就是palindrome(回文)。 注意你需要去掉字符串多余的标点符号和空格，然后把字符串转化成小写来验证此字符串是否为回文。 函数参数的值可以为”racecar”，”RaceCar”和”race CAR”。 String.replace()String.toLowerCase() 起初看到这么一个要求 小case吗！！分分钟搞定啊！于是如下代码出现了 1234567891011function palindrome(str)&#123; var arr=str.split(&apos;&apos;);//分割字符串为数组 var newarr=arr.reverse();//将数组反转 //比较数组 for(var i=0;i&lt;arr.length;i++)&#123; if(arr[i]!==newarr[i])&#123; return false; &#125; &#125; return true; &#125; 理所当然 代码GG 于是google之，发现 reverse() 这个方法是在执行后会改变原数组而不是返回一个新数组于是修改代码如下 123456789101112function palindrome(str)&#123; var arr=str.split(&apos;&apos;);//分割字符串为数组 var newarr=str.split(&apos;&apos;);//赋给另一个数组用来保存 arr.reverse();//将数组反转 //比较数组 for(var i=0;i&lt;arr.length;i++)&#123; if(arr2[i]!==newarr[i])&#123; return false; &#125; &#125; return true; &#125; 然后 又GG我又去检查发现题目给的样例里面还有大小写，特殊字符！！！这才想到了题目给的提示repalce() 利用正则替换字符串totoLowerCase() 将字符串转换成小写再次修改代码 12345678910111213141516171819function palindrome(str) &#123; // Good luck! var str1=str.replace(/\W+/g,&quot;&quot;); str1=str1.replace(/\_+/g,&quot;&quot;); str1=str1.toLowerCase(); var arr=str1.split(&apos;&apos;);//定义将字符串打散后的数组 var newarr=str1.split(&apos;&apos;);//将该数组再次保存 后面会调用reverse方法将其改变， arr会发生变化 ，所以将数组另存一份为newarr arr.reverse();//反转数组 //比较数组 for(var i=0;i&lt;arr.length;i++)&#123; if(arr[i]!==newarr[i])&#123; return false; &#125; &#125; return true; &#125; palindrome(&quot;not a palindrome&quot;); Ctrl+Enter 完美！]]></content>
+      <categories>
+        <category>freeCodeCamp</category>
+      </categories>
+      <tags>
+        <tag>fcc</tag>
+        <tag>算法</tag>
+        <tag>freeCodeCamp</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[FCC 算法题 Roman Numeral Converter]]></title>
+    <url>%2F2018%2F09%2F06%2FFCC%20%E7%AE%97%E6%B3%95%E9%A2%98%20Roman%20Numeral%20Converter%2F</url>
+    <content type="text"><![CDATA[要求：将给定的数字转换成罗马数字 用到的方法：Array.join()Array.push() 源代码123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293function convert(num) &#123;var x;var result=[];//处理千位 if(num&gt;=1000)&#123; x=Math.floor(num/1000) for(var i=0;i&lt;x;i++)&#123; result.push(&quot;M&quot;); &#125; num-=x*1000; &#125;//处理百位if(num&gt;=100)&#123; x=Math.floor(num/100); if(x&gt;=5)&#123; if(x==9)&#123; result.push(&quot;CM&quot;); console.log(x); &#125; else&#123; console.log(&quot;1111111&quot;); result.push(&quot;D&quot;); for(var i=0;i&lt;(x-5);i++)&#123; result.push(&quot;C&quot;); &#125; &#125; &#125; else if(x&lt;4)&#123; for(var i=0;i&lt;x;i++)&#123; result.push(&quot;C&quot;); &#125; &#125; else if(x==4)&#123; result.push(&quot;CD&quot;); &#125; num-=x*100; &#125;//处理十位if(num&gt;=10)&#123; x=Math.floor(num/10) if(x&gt;=5)&#123; if(x==9)&#123; result.push(&quot;XC&quot;); &#125; else&#123; result.push(&quot;L&quot;); for(var i=0;i&lt;(x-5);i++)&#123; result.push(&quot;X&quot;); &#125; &#125; &#125; else if(x&lt;4)&#123; for(var i=0;i&lt;x;i++)&#123; result.push(&quot;X&quot;); &#125; &#125; else if(x==4)&#123; result.push(&quot;XL&quot;); &#125; num-=x*10; &#125;//处理个位if(num&gt;=1)&#123; x=num; if(x&gt;=5)&#123; if(x==9)&#123; result.push(&quot;IX&quot;); &#125; else&#123; result.push(&quot;V&quot;); for(var i=0;i&lt;(x-5);i++)&#123; result.push(&quot;I&quot;); &#125; &#125; &#125; else if(x&lt;4)&#123; for(var i=0;i&lt;x;i++)&#123; result.push(&quot;I&quot;) &#125; &#125; else if(x==4)&#123; result.push(&quot;IV&quot;); &#125; num-=x*10;&#125; console.log(result.join(&quot;&quot;)); return result.join(&quot;&quot;);&#125;convert(1380);]]></content>
+      <categories>
+        <category>freeCodeCamp</category>
+      </categories>
+      <tags>
+        <tag>fcc</tag>
+        <tag>算法</tag>
+        <tag>freeCodeCamp</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[FCC 题目 Title Case a Sentence]]></title>
     <url>%2F2018%2F09%2F06%2FFCC%20%E7%AE%97%E6%B3%95%E9%A2%98%20Title%20Case%20a%20Sentence%2F</url>
     <content type="text"><![CDATA[要求确保字符串的每个单词首字母都大写，其余部分小写。 像’the’和’of’这样的连接符同理。 当你完成不了挑战的时候，记得开大招’Read-Search-Ask’。 这是一些对你有帮助的资源: String.split() ###源代码 function titleCase(str){ var arr=str.split(&quot; &quot;);//将传入的字符串分割为数组arr var arr2=[]; var newStr;//定义一个变量用来保存最终的字符串 for(var i=0;i&lt;arr.length;i++){ arr2=arr[i].split(&apos;&apos;);//将arr数组中的每一个元素再次分割为数组arr2 目的是下面找到首字母 arr2[0]=arr2[0].toUpperCase();//将arr2中的第一个字母大写 即arr数组中的每一个元素的首字母大写 for(var j=1;j&lt;arr[i].length;j++){ arr2[j]=arr2[j].toLowerCase();//遍历arr2数组将其除了下标为0的元素全部转换成小写 } arr[i]=arr2.join(&quot;&quot;);//拼接arr2数组为arr的每一个元素 newStr=arr.join(&quot; &quot;);//拼接arr数组为最终的字符串 } console.log(newStr); return newStr; } titleCase(&quot;I&apos;m a litte tea pot&quot;); 解决过程没什么值得说的 略过 #####要点join() 方法操作的对象是数组 所以是 arr.join() 而不是 arr[i].join()]]></content>
+      <categories>
+        <category>freeCodeCamp</category>
+      </categories>
+      <tags>
+        <tag>fcc</tag>
+        <tag>算法</tag>
+        <tag>freeCodeCamp</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[FCC 题目 Caesars Cipher]]></title>
+    <url>%2F2018%2F09%2F06%2FFCC%20%E7%AE%97%E6%B3%95%E9%A2%98%20Caesars%20Cipher%2F</url>
+    <content type="text"><![CDATA[要求让上帝的归上帝，凯撒的归凯撒。 下面我们来介绍风靡全球的凯撒密码Caesar cipher，又叫移位密码。 移位密码也就是密码中的字母会按照指定的数量来做移位。 一个常见的案例就是ROT13密码，字母会移位13个位置。由’A’ ↔ ‘N’, ‘B’ ↔ ‘O’，以此类推。 写一个ROT13函数，实现输入加密字符串，输出解密字符串。 所有的字母都是大写，不要转化任何非字母形式的字符(例如：空格，标点符号)，遇到这些特殊字符，跳过它们。 当你完成不了挑战的时候，记得开大招’Read-Search-Ask’。 这是一些对你有帮助的资源: String.charCodeAt()String.fromCharCode() 代码12345678910111213141516171819202122function rot13(str) &#123; // LBH QVQ VG! var arr=str.split(&apos;&apos;); console.log(arr); for(var i=0;i&lt;arr.length;i++)&#123; var num1=arr[i].charCodeAt(0);//输入的加密字符编码 var num2=num1-13; //输入的加密字符编码解密后-13用来解密 if(num1&gt;=65&amp;&amp;num1&lt;=90)&#123; //判断字符是不是字母 if(num2&lt;65)&#123; //num1-13超出字母的编码表 arr[i]=String.fromCharCode(num1+13);// 90-(13-(num1-64)) &#125; else&#123; arr[i]=String.fromCharCode(num2); &#125; &#125; else&#123; arr[i]=arr[i]; &#125; str=arr.join(&quot;&quot;); &#125; return str; &#125; 要点ACCII编码表 里面的字母编码]]></content>
       <categories>
         <category>freeCodeCamp</category>
       </categories>
@@ -124,19 +148,6 @@
       </categories>
       <tags>
         <tag>react react-router</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[FCC 算法题 Roman Numeral Converter]]></title>
-    <url>%2F2018%2F09%2F06%2FFCC%20%E7%AE%97%E6%B3%95%E9%A2%98%20Roman%20Numeral%20Converter%2F</url>
-    <content type="text"><![CDATA[要求：将给定的数字转换成罗马数字 用到的方法：Array.join()Array.push() 源代码123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293function convert(num) &#123;var x;var result=[];//处理千位 if(num&gt;=1000)&#123; x=Math.floor(num/1000) for(var i=0;i&lt;x;i++)&#123; result.push(&quot;M&quot;); &#125; num-=x*1000; &#125;//处理百位if(num&gt;=100)&#123; x=Math.floor(num/100); if(x&gt;=5)&#123; if(x==9)&#123; result.push(&quot;CM&quot;); console.log(x); &#125; else&#123; console.log(&quot;1111111&quot;); result.push(&quot;D&quot;); for(var i=0;i&lt;(x-5);i++)&#123; result.push(&quot;C&quot;); &#125; &#125; &#125; else if(x&lt;4)&#123; for(var i=0;i&lt;x;i++)&#123; result.push(&quot;C&quot;); &#125; &#125; else if(x==4)&#123; result.push(&quot;CD&quot;); &#125; num-=x*100; &#125;//处理十位if(num&gt;=10)&#123; x=Math.floor(num/10) if(x&gt;=5)&#123; if(x==9)&#123; result.push(&quot;XC&quot;); &#125; else&#123; result.push(&quot;L&quot;); for(var i=0;i&lt;(x-5);i++)&#123; result.push(&quot;X&quot;); &#125; &#125; &#125; else if(x&lt;4)&#123; for(var i=0;i&lt;x;i++)&#123; result.push(&quot;X&quot;); &#125; &#125; else if(x==4)&#123; result.push(&quot;XL&quot;); &#125; num-=x*10; &#125;//处理个位if(num&gt;=1)&#123; x=num; if(x&gt;=5)&#123; if(x==9)&#123; result.push(&quot;IX&quot;); &#125; else&#123; result.push(&quot;V&quot;); for(var i=0;i&lt;(x-5);i++)&#123; result.push(&quot;I&quot;); &#125; &#125; &#125; else if(x&lt;4)&#123; for(var i=0;i&lt;x;i++)&#123; result.push(&quot;I&quot;) &#125; &#125; else if(x==4)&#123; result.push(&quot;IV&quot;); &#125; num-=x*10;&#125; console.log(result.join(&quot;&quot;)); return result.join(&quot;&quot;);&#125;convert(1380);]]></content>
-      <categories>
-        <category>freeCodeCamp</category>
-      </categories>
-      <tags>
-        <tag>fcc</tag>
-        <tag>算法</tag>
-        <tag>freeCodeCamp</tag>
       </tags>
   </entry>
   <entry>
